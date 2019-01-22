@@ -19,3 +19,87 @@ https://www.google.com/search?ei=tI1GXJK3Kc7QaLD2ptAI&q=could+not+find+method+le
 ## << is deprecated
 
 https://github.com/researchgate/gradle-release/issues/214
+
+## Adding dependecy on a task by using closures 
+
+This following code doesn't work : BUILD FAILED ( could not determine the dependencies of task :taskX ) 
+
+    task taskX << {
+     println 'taskX'
+    }
+     taskX.dependsOn {
+     tasks.findAll { 
+        task → task.name.startsWith('lib') 
+     }
+    }
+    task lib1 << {
+     println 'lib1'
+    }
+    task lib2 << {
+     println 'lib2'
+    }
+    task notALib << {
+     println 'notALib'
+    }
+    
+After searching about errors
+
+### could not determine the dependencies of task :taskX
+
+Nothing to show but after searching about "tasks.findAll { task → task.name.startsWith('lib') }"
+
+#### tasks.findAll { task → task.name.startsWith('lib') }
+
+https://www.google.com/search?q=tasks.findAll+%7B+task+%E2%86%92+task.name.startsWith(%27lib%27)+%7D&oq=tasks.findAll+%7B+task+%E2%86%92+task.name.startsWith(%27lib%27)+%7D&aqs=chrome..69i57.2225j0j7&sourceid=chrome&ie=UTF-8
+
+http://mrhaki.blogspot.com/2012/06/gradle-goodness-working-with-live-task.html
+
+I succeed to solve the problem using the following lines
+
+
+    task taskX  {
+
+
+       doLast
+      {
+        println 'taskX'
+
+      }
+    }
+    taskX.dependsOn {
+       tasks.findAll { 
+          it.name.startsWith('lib') 
+       }
+    }
+    task lib1  {
+
+          doLast
+      {
+        println 'lib1'
+
+      }
+
+    }
+    task lib2  {
+
+
+          doLast
+      {
+        println 'lib2'
+
+      }
+
+    }
+    task notALib  {
+
+
+          doLast
+      {
+        println 'notALib'
+
+      }
+
+    }
+
+
+
